@@ -74,7 +74,6 @@ def copy_movies():
 
 def copy_subtitle():
     subtitle_folder_list = os.listdir(movies_subtitle_source)
-
     for movie in movies_names:
         for subtitle_folder in subtitle_folder_list:
             if subtitle_folder.startswith(movie["movie"]):
