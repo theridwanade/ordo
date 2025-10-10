@@ -1,3 +1,4 @@
+import json
 import os, re
 import shutil
 from pathlib import Path
@@ -6,9 +7,31 @@ import questionary
 
 path = os.path
 
-movies_source = questionary.path("What's the path to the movies").ask()
-movies_subtitle_source = questionary.path("What's the path to the movies subtitle").ask()
-movie_destination = questionary.path("What's the path to the destination").ask()
+
+def get_sources():
+    last_sources_store = Path("sources.json")
+    if last_sources_store.exists():
+        with open("sources.json","r") as json_file:
+            last_sources = json.load(json_file)
+        use_last = questionary.confirm(
+                f"Do you want to use the last sources?\nMovies: {last_sources['movies_source']}\nSubtitle: {last_sources['movies_subtitle_source']}\nDestination: {last_sources['movie_destination']}\n"
+            ).ask()
+        if use_last:
+            return last_sources['movies_source'], last_sources['movies_subtitle_source'], last_sources['movie_destination']
+
+    last_sources_store.touch(exist_ok=True)
+    movies_source = questionary.path("What's the path to the movies").ask()
+    movies_subtitle_source = questionary.path("What's the path to the movies subtitle").ask()
+    movie_destination = questionary.path("What's the path to the destination").ask()
+    with open("sources.json","w") as json_file:
+        json.dump({
+            "movies_source": movies_source,
+            "movies_subtitle_source": movies_subtitle_source,
+            "movie_destination": movie_destination
+        }, json_file, indent=4)
+    return movies_source, movies_subtitle_source, movie_destination
+
+[movies_source, movies_subtitle_source, movie_destination] = get_sources()
 
 # "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/d"
 # "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/subtitle/"
