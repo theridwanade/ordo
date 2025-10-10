@@ -1,13 +1,18 @@
 import os, re
 import shutil
 from pathlib import Path
+import questionary
+
 
 path = os.path
 
-movies_source = "/run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/d"
-movies_subtitle_source = "/run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/subtitle"
-movie_destination = "/media/theridwanade/Ridwan/06_Archive/Movies"
-# movie_destination = "archive"
+movies_source = questionary.path("What's the path to the movies").ask()
+movies_subtitle_source = questionary.path("What's the path to the movies subtitle").ask()
+movie_destination = questionary.path("What's the path to the destination").ask()
+
+# "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/d"
+# "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/subtitle/"
+# "../../../../media/theridwanade/Ridwan/06_Archive/Movies/"
 
 
 def get_movie_names():
@@ -34,26 +39,27 @@ def get_movie_names():
 def get_movie_tags():
     movie_tag = []
     movies = list(get_movie_names())
-    tags_format = {
-        "c": "Chinese archive",
-        "a": "American archive",
-        "k": "Korean archive",
-        "an": "Anime"
-    }
-    # print the tags formated
-    for tag, label in tags_format.items():
-        print(f"{tag} → {label}")
+    tags_list = [
+                "Chinese archive",
+                "American archive",
+                "Korean archive",
+                "Anime"
+            ]
+    # # print the tags formated
+    for tag in tags_list:
+        print(tag)
 
     for movie in movies:
         while True:
-            tag = input("Movie {movie}: ".format(movie=movie)).lower()
-            if tag == "":
-                print("Tag is required. Please enter a valid tag.")
-                continue
-            tag_name = tags_format.get(tag)
-            if not tag_name:
-                print("Invalid tag. Choose from:", ", ".join(tags_format.keys()))
-                continue
+            tag_name = questionary.select(f"Select a tag for {movie}:", choices=[
+                "Chinese archive",
+                "American archive",
+                "Korean archive",
+                "Anime",
+                "Ignore"
+            ]).ask()
+            if tag_name == "Ignore":
+                break
 
             movie_tag.append({"movie": movie, "tag": tag_name})
             break
