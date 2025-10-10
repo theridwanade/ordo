@@ -3,6 +3,8 @@ import os, re
 import shutil
 from pathlib import Path
 import questionary
+from tqdm import tqdm
+
 
 
 path = os.path
@@ -61,7 +63,8 @@ def get_movie_tags():
                 "Chinese archive",
                 "American archive",
                 "Korean archive",
-                "Anime"
+                "Anime",
+                "Ignore",
             ]
 
     for movie in movies:
@@ -79,20 +82,22 @@ def get_movie_tags():
 
 def copy_movies():
     movies_list = os.listdir(movies_source)
-    for movie in movies_names:
-        movie_file_names = [f for f in movies_list if f.startswith(movie["movie"])]
-        for i in range(len(movie_file_names)):
-            movie_file_path = movies_source + "/" + movie_file_names[i]
-            destination = Path(movie_destination) /movie["tag"] / movie["movie"]
+    for movie_info in tqdm(movies_names, desc="Copying movie folders"):
+        movie_file_names = [
+            f for f in movies_list if f.startswith(movie_info["movie"])
+        ]
+        for movie_file in tqdm(movie_file_names, desc=f"{movie_info['movie']}", leave=False):
+            movie_file_path = Path(movies_source) / movie_file
+            destination = Path(movie_destination) / movie_info["tag"] / movie_info["movie"]
             destination.mkdir(parents=True, exist_ok=True)
             shutil.copy2(movie_file_path, destination)
 
 def copy_subtitle():
     subtitle_folder_list = os.listdir(movies_subtitle_source)
-    for movie in movies_names:
+    for movie in tqdm(movies_names, desc="Copying subtitle folders"):
         for subtitle_folder in subtitle_folder_list:
             if subtitle_folder.startswith(movie["movie"]):
-                for file_name in os.listdir(movies_subtitle_source + "/" + subtitle_folder):
+                for file_name in tqdm(os.listdir(movies_subtitle_source + "/" + subtitle_folder), desc=f"{movie['movie']}", leave=False):
                     subtitle_file_path = movies_subtitle_source + "/" + subtitle_folder + "/" + file_name
                     subtitle_destination = Path(movie_destination) / movie["tag"] / movie["movie"] / "subtitle"
                     subtitle_destination.mkdir(parents=True, exist_ok=True)
