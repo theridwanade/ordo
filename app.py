@@ -33,11 +33,6 @@ def get_sources():
 
 [movies_source, movies_subtitle_source, movie_destination] = get_sources()
 
-# "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/d"
-# "../../../../run/user/1000/gvfs/mtp:host=Unisoc_TECNO_POP_8_11002373CE003858/Internal shared storage/Android/data/com.community.oneroom/files/Download/subtitle/"
-# "../../../../media/theridwanade/Ridwan/06_Archive/Movies/"
-
-
 def get_movie_names():
     series_patterns = re.compile(
     r"^(?P<name>.+?)(?:_\d+p)?_S\d{1,2}_E\d{1,2}\.(mp4|avi|mkv|mov)$",
@@ -68,19 +63,10 @@ def get_movie_tags():
                 "Korean archive",
                 "Anime"
             ]
-    # # print the tags formated
-    for tag in tags_list:
-        print(tag)
 
     for movie in movies:
         while True:
-            tag_name = questionary.select(f"Select a tag for {movie}:", choices=[
-                "Chinese archive",
-                "American archive",
-                "Korean archive",
-                "Anime",
-                "Ignore"
-            ]).ask()
+            tag_name = questionary.select(f"Select a tag for {movie}:", choices=tags_list).ask()
             if tag_name == "Ignore":
                 break
 
