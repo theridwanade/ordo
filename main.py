@@ -6,9 +6,19 @@ import questionary
 from tqdm import tqdm
 import typer
 
+
+# TODO: Make project cli
+# TODO: Handle movies with multiple seasons
+# TODO: Add concurrency and multi-threading
+# TODO: Handle metadata for movies
+# TODO: Implement files moving, and copying options
+# TODO: Handle checksums creation for file verification
+# TODO: Manage file chunk, streaming and operation resumption.
+# TODO: Implement logging, progress tracking and improved UX
+
+
 app = typer.Typer(help="An opinionated Python CLI for movie organization.")
 path = os.path
-
 
 def get_sources():
     last_sources_store = Path("sources.json")
