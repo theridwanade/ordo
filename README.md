@@ -1,6 +1,22 @@
 # **ORDO**
 
-> I don’t know why I named it *Ordo*. I just did. Turns out it means *order* in Latin — which checks out, because this thing forces order on chaos.
+> I don’t know why I name```bash
+# Clone the repo
+git clone https://github.com/theridwanade/ordo.git
+# or, if you're fancy:
+git clone git@github.com:theridwanade/ordo.git
+
+cd ordo
+
+# Install the package in development mode
+pip install -e .
+
+# Run the application
+ordo --help
+ordo organize
+```
+
+Now it's a proper CLI command! Run `ordo organize` to start organizing your movies. did. Turns out it means *order* in Latin — which checks out, because this thing forces order on chaos.
 > (Also yes — right now Ordo is basically built for **MovieBox**. If you use something else, it *might* work… or it might sulk and do nothing. Welcome to alpha software.)
 
 ---
