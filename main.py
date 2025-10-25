@@ -7,7 +7,7 @@ from tqdm import tqdm
 import typer
 
 
-# TODO: Make project cli
+# TODO: Modularize the projects code
 # TODO: Handle movies with multiple seasons
 # TODO: Add concurrency and multi-threading
 # TODO: Handle metadata for movies
@@ -43,9 +43,8 @@ def get_sources():
         }, json_file, indent=4)
     return movies_source, movies_subtitle_source, movie_destination
 
-[movies_source, movies_subtitle_source, movie_destination] = get_sources()
 
-def get_movie_names():
+def get_movie_names(movies_source):
     series_patterns = re.compile(
     r"^(?P<name>.+?)(?:_\d+p)?_S\d{1,2}_E\d{1,2}\.(mp4|avi|mkv|mov)$",
     re.IGNORECASE)
@@ -66,9 +65,9 @@ def get_movie_names():
                 print(f"Unrecognized file format: {movie_patterns}")
     return set(movie_name)
 
-def get_movie_tags():
+def gather_movie_labels(movies_source):
     movie_tag = []
-    movies = list(get_movie_names())
+    movies = list(get_movie_names(movies_source))
     tags_list = [
                 "Chinese archive",
                 "American archive",
@@ -88,7 +87,7 @@ def get_movie_tags():
 
     return movie_tag
 
-def copy_movies(movies_names):
+def copy_movies(movies_names, movies_source, movie_destination):
     movies_list = os.listdir(movies_source)
     for movie_info in tqdm(movies_names, desc="Copying movie folders"):
         movie_file_names = [
@@ -100,7 +99,7 @@ def copy_movies(movies_names):
             destination.mkdir(parents=True, exist_ok=True)
             shutil.copy2(movie_file_path, destination)
 
-def copy_subtitle(movies_names):
+def copy_subtitle(movies_names, movies_subtitle_source, movie_destination):
     subtitle_folder_list = os.listdir(movies_subtitle_source)
     for movie in tqdm(movies_names, desc="Copying subtitle folders"):
         for subtitle_folder in subtitle_folder_list:
@@ -116,9 +115,10 @@ def copy_subtitle(movies_names):
 
 @app.command()
 def organize():
-    movies_names = get_movie_names()
-    copy_movies(movies_names)
-    copy_subtitle(movies_names)
+    [movies_source, movies_subtitle_source, movie_destination] = get_sources()
+    movies_names = gather_movie_labels(movies_source)
+    copy_movies(movies_names, movies_source, movie_destination)
+    copy_subtitle(movies_names, movies_subtitle_source, movie_destination)
 
 
 @app.command()
