@@ -53,3 +53,20 @@ class UserPrompts:
                 ))
         
         return movie_infos
+    
+    @staticmethod
+    def select_operation_type() -> str:
+        """Prompt user to select operation type (copy or move)."""
+        operation = questionary.select(
+            "Select operation type:",
+            choices=["copy", "move"]
+        ).ask()
+        return operation or "copy"
+    
+    @staticmethod
+    def select_checksum_option() -> bool:
+        """Prompt user whether to calculate checksums."""
+        return questionary.confirm(
+            "Calculate checksums for file verification? (slower but ensures integrity)",
+            default=True
+        ).ask()
