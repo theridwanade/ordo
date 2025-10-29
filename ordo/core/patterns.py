@@ -9,6 +9,11 @@ class MoviePatterns:
         re.IGNORECASE
     )
     
+    SERIES_SUBTITLE_PATTERN = re.compile(
+        r"^(?P<name>.+?)(?:_\d+p)?_S(?P<season>\d{1,2})_E(?P<episode>\d{1,2})\.(srt|sub|ass|vtt)$",
+        re.IGNORECASE
+    )
+    
     MOVIE_PATTERN = re.compile(
         r"^(?P<name>.+?)(?:_\d+p)?\.(mp4|avi|mkv|mov)$", 
         re.IGNORECASE
@@ -33,9 +38,12 @@ class MoviePatterns:
     def extract_season_episode(cls, filename: str) -> Optional[Tuple[str, int, int]]:
         """Extract series name, season number, and episode number from filename.
         
+        Works for both video files and subtitle files.
+        
         Returns:
             Tuple of (series_name, season_number, episode_number) or None if not a series file.
         """
+        # Try video file pattern first
         match = cls.SERIES_PATTERN.match(filename)
         if match:
             return (
@@ -43,6 +51,16 @@ class MoviePatterns:
                 int(match.group("season")),
                 int(match.group("episode"))
             )
+        
+        # Try subtitle pattern
+        match = cls.SERIES_SUBTITLE_PATTERN.match(filename)
+        if match:
+            return (
+                match.group("name"),
+                int(match.group("season")),
+                int(match.group("episode"))
+            )
+        
         return None
     
     @classmethod

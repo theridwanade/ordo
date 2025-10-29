@@ -42,6 +42,16 @@ class TestMoviePatterns(unittest.TestCase):
         filename = "Movie_1080p.mp4"
         result = MoviePatterns.is_series(filename)
         self.assertFalse(result)
+    
+    def test_extract_season_episode_from_subtitle(self):
+        filename = "SeriesA_S01_E05.srt"
+        result = MoviePatterns.extract_season_episode(filename)
+        self.assertEqual(result, ("SeriesA", 1, 5))
+    
+    def test_extract_season_episode_from_subtitle_with_quality(self):
+        filename = "SeriesB_1080p_S02_E10.srt"
+        result = MoviePatterns.extract_season_episode(filename)
+        self.assertEqual(result, ("SeriesB", 2, 10))
 
 if __name__ == '__main__':
     unittest.main()
