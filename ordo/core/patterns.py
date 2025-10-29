@@ -65,5 +65,9 @@ class MoviePatterns:
     
     @classmethod
     def is_series(cls, filename: str) -> bool:
-        """Check if filename represents a series episode."""
+        """Check if filename represents a series episode video file.
+        
+        Note: This only checks video file patterns (mp4, mkv, avi, mov).
+        For subtitle files, use extract_season_episode() which handles both.
+        """
         return cls.SERIES_PATTERN.match(filename) is not None
