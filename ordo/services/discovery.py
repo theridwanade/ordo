@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List, Set
+from typing import List, Set, Dict
 from ..core.patterns import MoviePatterns
 
 class MovieDiscovery:
@@ -34,3 +34,35 @@ class MovieDiscovery:
             f for f in os.listdir(source_path) 
             if f.startswith(movie_name)
         ]
+    
+    def get_seasons_for_series(self, movie_name: str, source_path: Path) -> Dict[int, List[str]]:
+        """Get episodes grouped by season for a series.
+        
+        Returns:
+            Dictionary mapping season numbers to lists of episode filenames.
+        """
+        if not source_path.exists():
+            return {}
+        
+        seasons = {}
+        for filename in os.listdir(source_path):
+            season_info = self.patterns.extract_season_episode(filename)
+            if season_info:
+                series_name, season_num, episode_num = season_info
+                if series_name == movie_name:
+                    if season_num not in seasons:
+                        seasons[season_num] = []
+                    seasons[season_num].append(filename)
+        
+        return seasons
+    
+    def is_series(self, movie_name: str, source_path: Path) -> bool:
+        """Check if a movie is actually a series with episodes."""
+        if not source_path.exists():
+            return False
+        
+        for filename in os.listdir(source_path):
+            if filename.startswith(movie_name) and self.patterns.is_series(filename):
+                return True
+        
+        return False

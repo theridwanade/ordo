@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 from enum import Enum
 
 class MovieTag(Enum):
@@ -15,6 +15,8 @@ class MovieInfo:
     name: str
     tag: MovieTag
     files: List[str]
+    is_series: bool = False
+    seasons: Dict[int, List[str]] = field(default_factory=dict)  # season_number -> list of episode files
 
 @dataclass
 class SourceConfig:

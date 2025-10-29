@@ -45,16 +45,26 @@ class MovieOrganizer:
             print("No movies selected for organization")
             return
         
-        # Create file mapping
-        movie_files_map = {}
-        for movie_name in movie_names:
-            movie_files_map[movie_name] = self.discovery.get_movie_files(
-                movie_name, config.movies_source
-            )
+        # Enhance movie info with files and season information
+        for movie_info in movie_infos:
+            # Check if it's a series
+            is_series = self.discovery.is_series(movie_info.name, config.movies_source)
+            movie_info.is_series = is_series
+            
+            if is_series:
+                # Get episodes grouped by season
+                movie_info.seasons = self.discovery.get_seasons_for_series(
+                    movie_info.name, config.movies_source
+                )
+            else:
+                # Get all movie files
+                movie_info.files = self.discovery.get_movie_files(
+                    movie_info.name, config.movies_source
+                )
         
         # Copy movies and subtitles
         self.file_ops.copy_movies(
-            movie_infos, config.movies_source, config.destination, movie_files_map
+            movie_infos, config.movies_source, config.destination
         )
         self.file_ops.copy_subtitles(
             movie_infos, config.subtitle_source, config.destination

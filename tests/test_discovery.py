@@ -49,6 +49,52 @@ class TestMovieDiscovery(unittest.TestCase):
         expected_files = ["MovieB_S01_E01.mkv", "MovieB_S01_E02.mkv"]
         
         self.assertEqual(sorted(movie_b_files), sorted(expected_files))
+    
+    def test_get_seasons_for_series(self):
+        # Create test files for a series with multiple seasons
+        test_files = [
+            "SeriesA_S01_E01.mkv",
+            "SeriesA_S01_E02.mkv",
+            "SeriesA_S02_E01.mkv",
+            "SeriesA_S02_E02.mkv",
+            "SeriesA_S02_E03.mkv",
+        ]
+        
+        for filename in test_files:
+            (self.temp_path / filename).touch()
+        
+        seasons = self.discovery.get_seasons_for_series("SeriesA", self.temp_path)
+        
+        self.assertEqual(len(seasons), 2)
+        self.assertEqual(len(seasons[1]), 2)
+        self.assertEqual(len(seasons[2]), 3)
+        self.assertIn("SeriesA_S01_E01.mkv", seasons[1])
+        self.assertIn("SeriesA_S02_E01.mkv", seasons[2])
+    
+    def test_is_series_true(self):
+        # Create test files
+        test_files = [
+            "SeriesA_S01_E01.mkv",
+            "SeriesA_S01_E02.mkv",
+        ]
+        
+        for filename in test_files:
+            (self.temp_path / filename).touch()
+        
+        result = self.discovery.is_series("SeriesA", self.temp_path)
+        self.assertTrue(result)
+    
+    def test_is_series_false(self):
+        # Create test files (regular movie)
+        test_files = [
+            "MovieA_1080p.mp4",
+        ]
+        
+        for filename in test_files:
+            (self.temp_path / filename).touch()
+        
+        result = self.discovery.is_series("MovieA", self.temp_path)
+        self.assertFalse(result)
 
 if __name__ == '__main__':
     unittest.main()
